@@ -285,7 +285,7 @@ class RegisterController extends Controller
 				);
 
 				return response()->json(['data' => true, 'message' => 'sent', 'success' => 1], 200);
-			} // end if sms 
+			} // end if sms
 			return response()->json(['data' => false, 'message' => 'sent', 'success' => 1], 200);
 		}
 	}

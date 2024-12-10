@@ -6,6 +6,7 @@ use Datatables;
 use App\Models\Banner;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Brand;
 use Illuminate\Support\Facades\Input;
 use Validator;
 
@@ -53,9 +54,13 @@ class BannerController extends Controller
 
     //*** GET Request
     public function create()
-    {
-        return view('admin.banner.create');
-    }
+{
+    // Fetch all active brands
+    $brands = Brand::where('status', 1)->get();
+
+    // Pass brands to the view
+    return view('admin.banner.create', compact('brands'));
+}
 
     //*** GET Request
     public function largecreate()
@@ -72,9 +77,8 @@ class BannerController extends Controller
     //*** POST Request
     public function store(Request $request)
     {
-        //--- Validation Section
         $rules = [
-            'photo'      => 'required|mimes:jpeg,jpg,png,svg',
+            'photo' => 'required|mimes:jpeg,jpg,png,svg',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -82,9 +86,7 @@ class BannerController extends Controller
         if ($validator->fails()) {
             return response()->json(array('errors' => $validator->getMessageBag()->toArray()));
         }
-        //--- Validation Section Ends
 
-        //--- Logic Section
         $data = new Banner();
         $input = $request->all();
         if ($file = $request->file('photo')) {
@@ -93,12 +95,9 @@ class BannerController extends Controller
             $input['photo'] = $name;
         }
         $data->fill($input)->save();
-        //--- Logic Section Ends
 
-        //--- Redirect Section        
         $msg = 'New Data Added Successfully.';
         return response()->json($msg);
-        //--- Redirect Section Ends    
     }
 
     //*** GET Request
@@ -113,7 +112,7 @@ class BannerController extends Controller
     {
         //--- Validation Section
         $rules = [
-            'photo'      => 'mimes:jpeg,jpg,png,svg',
+            'photo' => 'mimes:jpeg,jpg,png,svg',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -139,10 +138,10 @@ class BannerController extends Controller
         $data->update($input);
         //--- Logic Section Ends
 
-        //--- Redirect Section     
+        //--- Redirect Section
         $msg = 'Data Updated Successfully.';
         return response()->json($msg);
-        //--- Redirect Section Ends            
+        //--- Redirect Section Ends
     }
 
     //*** GET Request Delete
@@ -152,19 +151,19 @@ class BannerController extends Controller
         //If Photo Doesn't Exist
         if ($data->photo == null) {
             $data->delete();
-            //--- Redirect Section     
+            //--- Redirect Section
             $msg = 'Data Deleted Successfully.';
             return response()->json($msg);
-            //--- Redirect Section Ends     
+            //--- Redirect Section Ends
         }
         //If Photo Exist
         if (file_exists(public_path() . '/assets/images/banners/' . $data->photo)) {
             unlink(public_path() . '/assets/images/banners/' . $data->photo);
         }
         $data->delete();
-        //--- Redirect Section     
+        //--- Redirect Section
         $msg = 'Data Deleted Successfully.';
         return response()->json($msg);
-        //--- Redirect Section Ends     
+        //--- Redirect Section Ends
     }
 }

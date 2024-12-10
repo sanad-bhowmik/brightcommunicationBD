@@ -39,6 +39,7 @@ class BrandController extends Controller
             ->rawColumns(['action'])
             ->toJson(); //--- Returning Json Data To Client Side
     }
+
     public function brands()
     {
 
@@ -138,9 +139,8 @@ class BrandController extends Controller
         $data = Brand::findOrFail($id);
         $data->status = 1;
         $data->save();
-        //--- Redirect Section
-        $msg = 'Data Activated Successfully.';
-        return response()->json($msg);
-        //--- Redirect Section Ends
+
+        // Optionally return a redirect or success message
+        return redirect()->route('admin.brands')->with('success', 'Brand activated successfully!');
     }
 }
